@@ -33,6 +33,8 @@ class MachCommands(CommandBase):
     @Command('run',
              description='Run Servo',
              category='post-build')
+    @CommandArgument('--release', '-r', action='store_true',
+                     help='running release builds')
     @CommandArgument('--debug', action='store_true',
                      help='Enable the debugger. Not specifying a '
                           '--debugger option will result in the default '
@@ -43,7 +45,7 @@ class MachCommands(CommandBase):
     @CommandArgument(
         'params', nargs='...',
         help="Command-line arguments to be passed through to Servo")
-    def run(self, params, debug=False, debugger=None):
+    def run(self, params, release=False, debug=False, debugger=None):
         env = self.build_env()
         env["RUST_BACKTRACE"] = "1"
 
@@ -69,6 +71,9 @@ class MachCommands(CommandBase):
                     + args + params)
         else:
             args = args + params
+
+        if release:
+            args = args + ['--release']
 
         subprocess.check_call(args, env=env)
 
